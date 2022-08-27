@@ -1,0 +1,1 @@
+docker run -d --name=controller --restart=unless-stopped -p=30001:5000 controller

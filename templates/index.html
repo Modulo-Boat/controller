@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!--Import JQuery-->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!--Import SocketIO-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Responsive Slider</title>
+
+    <style>
+        html, body {
+            margin:0;
+            padding:0;
+            height: 100vh;
+            height: -webkit-fill-available;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+        }
+        div.container {
+            margin: 0;
+            padding: 0;
+            overflow: hidden!important;
+            height: 100vh;
+            height: -webkit-fill-available;
+            width: 100%;
+        }
+        p{
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+        }
+        span{
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 40px;
+        }
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 50vh;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 7px;
+            height: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; /* Override default look */
+            appearance: none;
+            width: 40px; /* Set a specific slider handle width */
+            height: 40px; /* Slider handle height */
+            background: #809bce; /* Green background */
+            border-radius: 20px;
+            cursor: pointer; /* Cursor on hover */
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        }
+            
+
+        input[type=range]::-moz-range-thumb {
+            width: 50px;
+            height: 50px;
+        }
+        .column-range {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 40%;
+            width: 40vw;
+            height: 100%;
+        }
+        .column-value {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 10%;
+            width: 10vw;
+            height: 100%;
+        }
+        
+        .row {
+            display: flex;
+            height: 100%
+        }
+    </style>
+  </head>
+  
+  <body>
+    <div class="container">
+
+        <div class="row">
+            <div class="column-range">
+                <input type="range" min="-110" max="110" value="0" id="left" name="left" oninput="display(this.value, this.id)" style="transform: rotateZ(260deg);">
+            </div>
+            <div class="column-value">
+                <div style="text-align: center;">
+                    <p>Left</p>
+                    <span id="value_left">0</span>
+                    <span style="font-size:20px;">%</span>
+                </div>
+            </div>
+            <div class="column-value">
+                <div style="text-align: center;">
+                    <p>Right</p>
+                    <span id="value_right">0</span>
+                    <span style="font-size:20px;">%</span>
+                </div>
+            </div>
+            <div class="column-range">
+                <input type="range" min="-110" max="110" value="0" id="right" name="right" oninput="display(this.value, this.id)" style="transform: rotateZ(280deg);">
+            </div>
+        </div>
+    </div>
+
+    
+    <script>
+        function slider_buffer(val) {
+            if (val < -10)
+              return +val + 10
+            if (val > 10)
+              return +val - 10
+            return 0
+        }
+
+
+        function display(val, id) {
+          var val_id = "value_" + id
+          var value = slider_buffer(val)
+          document.getElementById(val_id).innerHTML = value;
+        }
+
+        var socket = io()
+      
+        function send(){
+          socket.emit('update_left', {'value':slider_buffer($('#left').val())})
+          socket.emit('update_right', {'value':slider_buffer($('#right').val())})
+        }
+        sending = setInterval(send, 110);
+      </script>
+  </body>
+</html>
